@@ -43,7 +43,11 @@ export async function checkAppointment(date: Date, time: string): Promise<boolea
           lte: endOfDay,
         },
         startTime: time,
+        NOT: {
+          status: "CANCELED"
+        }
       },
+      
       orderBy: { date: 'asc' },
     });
     if (appointments.length > 0) {
@@ -62,7 +66,7 @@ export async function checkAppointment(date: Date, time: string): Promise<boolea
 export async function createAppointment(appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | "status">): Promise<CrudResponse<Appointment>> {
   try {
     const userCheck = await checkUpcomingAppointments(appointmentData.userId);
-    if (userCheck) {
+    if (false) {
       return createErrorResponse(400, "Ya tienes un turno programado para el futuro. \n Puedes ver tus turnos en tu perfil.")
     }
 
@@ -181,4 +185,114 @@ async function listAppointments(page: number = 1, pageSize: number = 10): Promis
 export async function cancelAppointment(id: string): Promise<CrudResponse<Appointment>> {
     const appointment = await updateAppointment(id, { status: "CANCELED" })
     return appointment
+}
+
+
+export type AppointmentWithDetails = Appointment & {
+  user: { name: string; phone: string, id: string };
+  service: { name: string, id: string };
+}
+
+
+
+type AppointmentsResponse = SuccessResponse<AppointmentWithDetails[]> | ErrorResponse
+
+// Function to get appointments for the next seven days
+export const getNextSevenDaysAppointments = async (): Promise<AppointmentsResponse> => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const sevenDaysLater = new Date(today);
+    sevenDaysLater.setDate(today.getDate() + 7);
+    sevenDaysLater.setHours(23, 59, 59, 999);
+
+    const appointments = await db.appointment.findMany({
+      where: {
+        date: {
+          gte: today,
+          lte: sevenDaysLater,
+        },
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            phone: true,
+          },
+        },
+        service: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        date: 'asc',
+      },
+    });
+
+    return {
+      status: 200,
+      data: appointments,
+    };
+  } catch (error) {
+    console.error("Error in getNextSevenDaysAppointments:", error);
+    return {
+      status: 500,
+      message: `Error al obtener citas para los próximos siete días: ${error instanceof Error ? error.message : String(error)}`,
+    };
+  }
+}
+
+// Function to get today's appointments
+export const getTodayAppointments = async (date: Date): Promise<AppointmentsResponse> => {
+  try {
+    const today = date;
+    today.setHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+
+    const appointments = await db.appointment.findMany({
+      where: {
+        date: {
+          gte: today,
+          lt: tomorrow,
+        },
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            phone: true,
+          },
+        },
+        service: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        date: 'asc',
+      },
+    });
+
+    return {
+      status: 200,
+      data: appointments,
+    };
+  } catch (error) {
+    console.error("Error in getTodayAppointments:", error);
+    return {
+      status: 500,
+      message: `Error al obtener citas para hoy: ${error instanceof Error ? error.message : String(error)}`,
+    };
+  }
 }

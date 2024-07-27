@@ -7,10 +7,10 @@ import { Analytics } from "@vercel/analytics/react";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import NextTopLoader from "nextjs-toploader";
-import { getUserData } from "./actions/auth";
+import { getUserData } from "../actions/auth";
 
 export const metadata: Metadata = {
-  title: "Turnero",
+  title: "Usuario",
   icons: [
     {
       rel: "icon",
@@ -22,24 +22,13 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
- 
+  const user = await getUserData();
 
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${GeistSans.variable}`}
-    >
-      {/*  */}
-      <body>
-        <Analytics />
-        <Providers>
-          <NextTopLoader color="#27aadd" />
-          <Toaster></Toaster>
-          {children}
-          {/* <Footer /> */}
-        </Providers>
-      </body>
-    </html>
+    <>
+      <HeaderHome user={user?.status === 200 ? user.data : null} />
+      {children}
+      {/* <Footer /> */}
+    </>
   );
 }

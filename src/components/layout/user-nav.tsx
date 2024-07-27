@@ -35,10 +35,10 @@ export function UserNav({ user }: { user: User | null }) {
           <DropdownMenuLabel className="font-normal">
             <div className="flex items-center justify-between gap-x-2">
               <div className="flex flex-col space-y-1">
-                <p className="text-text text-sm font-medium leading-none">
+                <p className="mb-2 text-text text-sm font-medium leading-none">
                   {user.name}
                 </p>
-                <p className="text-text text-xs leading-none">{user.email}</p>
+                <p className="text-text text-xs leading-none">{user.phone}</p>
               </div>
               <span className="flex items-center gap-2 md:hidden">
                 <ThemeToggle />

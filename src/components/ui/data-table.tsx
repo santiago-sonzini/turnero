@@ -5,6 +5,7 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   useReactTable
 } from '@tanstack/react-table';
 
@@ -19,6 +20,7 @@ import {
 import { Input } from './input';
 import { Button } from './button';
 import { ScrollArea, ScrollBar } from './scroll-area';
+import { useState } from 'react';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -31,11 +33,23 @@ export function DataTable<TData, TValue>({
   data,
   searchKey
 }: DataTableProps<TData, TValue>) {
+  const [pagination, setPagination] = useState({
+    pageIndex: 0, //initial page index
+    pageSize: 5, //default page size
+  });
+
+
   const table = useReactTable({
+    state: {
+        pagination
+    },
     data,
     columns,
+    onPaginationChange: setPagination, //update the pagination state when internal APIs mutate the pagination state
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel()
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(), //load client-side pagination code
+
   });
 
   /* this can be used to get the selectedrows 
@@ -49,9 +63,9 @@ export function DataTable<TData, TValue>({
         onChange={(event) =>
           table.getColumn(searchKey)?.setFilterValue(event.target.value)
         }
-        className="w-full md:max-w-sm"
+        className="w-full md:max-w-sm my-2"
       />
-      <ScrollArea className="h-[calc(80vh-220px)] rounded-md border">
+      <ScrollArea className="h-[calc(80vh-220px)] rounded-md border my-2">
         <Table className="relative">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -104,8 +118,7 @@ export function DataTable<TData, TValue>({
       </ScrollArea>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          Pagina {table.getState().pagination.pageIndex + 1} de {table.getPageCount()}
         </div>
         <div className="space-x-2">
           <Button
@@ -114,7 +127,7 @@ export function DataTable<TData, TValue>({
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            Anterior
           </Button>
           <Button
             variant="outline"
@@ -122,7 +135,7 @@ export function DataTable<TData, TValue>({
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Next
+            Siguiente
           </Button>
         </div>
       </div>
