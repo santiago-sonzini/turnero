@@ -1,7 +1,7 @@
 "use server"
 import { jwtVerify, JWTPayload, decodeJwt, SignJWT } from 'jose';
 import { cookies } from 'next/headers';
-import { get_user_phone } from './users';
+import { get_user_phone, get_user_phone_whit_apointments } from './users';
 import { get } from 'http';
 //import { get_user_email } from './contacts';
 
@@ -106,10 +106,22 @@ export async function logout() {
 
 
 export  const  getUserData = async () => {
-	const email = await getJwtData();
-	if (!email) return null;
+	const phone = await getJwtData();
+	if (!phone) return null;
 	
-	const res = await get_user_phone(email);
+	const res = await get_user_phone(phone);
+	if (!res) return null;
+
+	return res;
+}
+
+
+
+export  const  getUserDataWithAppointment = async () => {
+	const phone = await getJwtData();
+	if (!phone) return null;
+	
+	const res = await get_user_phone_whit_apointments(phone);
 	if (!res) return null;
 
 	return res;

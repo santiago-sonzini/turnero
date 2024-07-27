@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 import { db } from "@/server/db";
 
 import { Appointment, PrismaClient } from '@prisma/client'
+import { checkUpcomingAppointments } from './users';
 
 
 // Response types
@@ -24,19 +25,64 @@ function createErrorResponse(status: 400 | 404 | 500, message: string): ErrorRes
   return { status, message }
 }
 
+export async function checkAppointment(date: Date, time: string): Promise<boolean> {
+  try {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const dayOfWeek = date.getDay();
+    console.log("🚀 ~ getAllAppointments ~ dayOfWeek:", dayOfWeek)
+
+    const appointments = await db.appointment.findMany({
+      where: {
+        date: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+        startTime: time,
+      },
+      orderBy: { date: 'asc' },
+    });
+    if (appointments.length > 0) {
+      return true;
+    } else {
+      return false
+    }
+    
+  } catch (error) {
+    console.error("Error in getAllAppointments:", error);
+    throw error
+  }
+}
+
 // Create
 export async function createAppointment(appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | "status">): Promise<CrudResponse<Appointment>> {
   try {
+    const userCheck = await checkUpcomingAppointments(appointmentData.userId);
+    if (userCheck) {
+      return createErrorResponse(400, "Ya tienes un turno programado para el futuro. \n Puedes ver tus turnos en tu perfil.")
+    }
+
+    const appointmentCheck = await checkAppointment(appointmentData.date, appointmentData.startTime);
+    if (appointmentCheck) {
+      return createErrorResponse(400, "El turno ya existe para ese horario")
+    }
+
+
+
     const appointment = await db.appointment.create({
       data: appointmentData,
     })
     return {
       status: 201,
       data: appointment,
-      message: 'Appointment created successfully',
+      message: 'Turno agregado exitosamente',
     }
   } catch (error) {
-    return createErrorResponse(500, `Failed to create appointment: ${error instanceof Error ? error.message : String(error)}`)
+    return createErrorResponse(500, `No se puedo crear el turno, intente nuevamente mas tarde.`)
   }
 }
 
@@ -68,10 +114,10 @@ async function updateAppointment(id: string, updateData: Partial<Omit<Appointmen
     return {
       status: 200,
       data: updatedAppointment,
-      message: 'Appointment updated successfully',
+      message: 'Turno actualizado exitosamente',
     }
   } catch (error) {
-    return createErrorResponse(500, `Failed to update appointment: ${error instanceof Error ? error.message : String(error)}`)
+    return createErrorResponse(500, `No se pudo actualizar el turno, intente nuevamente mas tarde.`)
   }
 }
 
@@ -113,7 +159,7 @@ async function listAppointments(page: number = 1, pageSize: number = 10): Promis
       }),
       db.appointment.count(),
     ])
-    
+
     return {
       status: 200,
       data: {
@@ -129,4 +175,10 @@ async function listAppointments(page: number = 1, pageSize: number = 10): Promis
   } catch (error) {
     return createErrorResponse(500, `Failed to list appointments: ${error instanceof Error ? error.message : String(error)}`)
   }
+}
+
+
+export async function cancelAppointment(id: string): Promise<CrudResponse<Appointment>> {
+    const appointment = await updateAppointment(id, { status: "CANCELED" })
+    return appointment
 }

@@ -47,7 +47,11 @@ export const getAllServices = async (date: Date): Promise<ServicesResponse> => {
               gte: startOfDay,
               lte: endOfDay,
             },
+            NOT: {
+              status: "CANCELED"
+            }
           },
+          
         },
       },
       orderBy: { name: 'asc' },

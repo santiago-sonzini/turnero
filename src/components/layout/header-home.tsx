@@ -30,37 +30,26 @@ export default function HeaderHome({ user }: { user: any }) {
   return (
     <div className="supports-backdrop-blur:bg-background/60 w-full left-0 right-0 top-0 z-1000 bg-background backdrop-blur">
       <nav className="flex h-14 items-center justify-between px-4">
-        <div className="block">
-          <Link href={"/"} >
-            <h1 className="text-2xl font-bold text-primary">
+        <div className="block md:w-1/3">
+          <Link href={"/turnos"} >
+            <h1 className="text-2xl font-bold text-text">
               Turnero
             </h1>
           </Link>
         </div>
-        {/* <div className="flex items-center justify-center gap-5">
-          <Link  href={"/about"}>
+        <div className="w-1/2  flex items-center justify-end md:justify-between gap-x-2">
+          
+          <Link  href={"/usuario"}>
           <motion.p 
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-            className="text-text underline font-semibold">
-              Sobre nosotros
+            className="md:hidden text-text underline font-semibold">
+              Mis turnos
 
             </motion.p>
           </Link>
-          <Link  href={"/contact"}>
-            <motion.p 
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            className="text-text underline font-semibold">
-              Cotizaciones
 
-            </motion.p>
-          </Link>
-        </div> */}
-
-        <div className="flex items-center gap-2">
-          
-         
+          <div className="flex items-center gap-x-2">
           <UserNav user={user ?? null} />
           {
             false
@@ -73,7 +62,12 @@ export default function HeaderHome({ user }: { user: any }) {
           <ThemeToggle />
 
           </span>
+          </div>
+
+          
         </div>
+       
+        
       </nav>
     </div>
   );

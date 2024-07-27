@@ -10,9 +10,9 @@ export default function Header() {
       <nav className="flex h-14 items-center justify-between px-4">
         <div className="hidden lg:block">
           <Link
-            href={'/'}
+            href={'/turnos'}
             target="_blank"
-            className='font-bold'
+            className='font-bold text-text'
           >
             Turnero
           </Link>

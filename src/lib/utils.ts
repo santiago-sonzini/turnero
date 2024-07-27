@@ -1,3 +1,4 @@
+import { AppointmentStatus } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -51,4 +52,20 @@ export function addMinutesToTime(timeString: string, minutesToAdd: number): stri
  } else {
    return null
  }
+}
+
+
+export function translateStatusToSpanish(status: AppointmentStatus): string {
+  switch (status) {
+    case AppointmentStatus.SCHEDULED:
+      return "Programado";
+    case AppointmentStatus.CONFIRMED:
+      return "Confirmado";
+    case AppointmentStatus.CANCELED:
+      return "Cancelado";
+    case AppointmentStatus.COMPLETED:
+      return "Completado";
+    default:
+      return "Estado desconocido";
+  }
 }

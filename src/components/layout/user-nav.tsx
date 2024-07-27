@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import ThemeToggle from "./ThemeToggle/theme-toggle";
 import { User } from "@prisma/client";
-export function UserNav({ user }: { user: User }) {
-
+import Link from "next/link";
+export function UserNav({ user }: { user: User | null }) {
   if (user) {
     return (
       <DropdownMenu>
@@ -35,12 +35,10 @@ export function UserNav({ user }: { user: User }) {
           <DropdownMenuLabel className="font-normal">
             <div className="flex items-center justify-between gap-x-2">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none text-text">
-                  {user.name} 
+                <p className="text-text text-sm font-medium leading-none">
+                  {user.name}
                 </p>
-                <p className=" text-xs leading-none text-text">
-                  {user.email}
-                </p>
+                <p className="text-text text-xs leading-none">{user.email}</p>
               </div>
               <span className="flex items-center gap-2 md:hidden">
                 <ThemeToggle />
@@ -49,22 +47,12 @@ export function UserNav({ user }: { user: User }) {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
 
-          {/* <DropdownMenuGroup>
-            <DropdownMenuItem>
-              Profile
-              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              Billing
-              <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              Settings
-              <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem>New Team</DropdownMenuItem>
-          </DropdownMenuGroup> */}
-          {/* <DropdownMenuSeparator /> */}
+          <DropdownMenuGroup>
+            <Link href={"/usuario"}>
+              <DropdownMenuItem>Mis turnos</DropdownMenuItem>
+            </Link>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => {
               logout();

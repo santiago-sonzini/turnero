@@ -19,56 +19,69 @@ import React, { useEffect, useState } from "react";
 import { Form } from "react-hook-form";
 import { z } from "zod";
 
-const Page = ({service, user }: {service: ServiceWithAvailability, user: User | null}) => {
+const Page = ({ user }: {user: User | null}) => {
   const [serviceState, setServiceState] = useState<ServiceWithAvailability| null>(null);
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState<Date|null>(new Date());
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const getData = async () => { 
-      setLoading(true);
-      const res = await getAllServices(date)
-      
-      if (res.status === 200 && res.data[0] && res.data[0].availableTimes.length > 0) {
-        setServiceState(res.data[0]);
-      } else {
-        console.log("Error al obtener los servicios");
-        setServiceState(null);
-      }
-      setLoading(false);
+  const getData = async (date: Date) => {
+    setLoading(true);
+    const res = await getAllServices(date)
+    
+    if (res.status === 200 && res.data[0] && res.data[0].availableTimes.length > 0) {
+      setServiceState(res.data[0]);
+    } else {
+      console.log("Error al obtener los servicios");
+      setServiceState(null);
     }
-    getData();
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    if (date) {
+      getData(date);
+    }
   }, [date]);
 
   return (
     <div className="container flex flex-col items-center justify-start md:justify-center gap-12 px-4 py-16">
-      <div className="w-full text-text flex items-center justify-center gap-4 text-center md:w-1/3">
-        <Button disabled={loading} onClick={
+      <div className="w-5/6 text-text flex items-center justify-center gap-4 text-center md:w-1/3">
+        {/* <Button disabled={loading} onClick={
           () => {
             setDate(addDays(date, -1));
           }
         } className="">
           <ChevronLeft />
-        </Button>
+        </Button> */}
 
         <DatePicker disabled={loading} selected={date} onSelect={setDate} />
 
-        <Button disabled={loading} onClick={
+        {/* <Button disabled={loading} onClick={
           () => {
             setDate(addDays(date, 1));
           }
         } className="">
           <ChevronRight />
-        </Button>
+        </Button> */}
       </div>
-      {loading && <AvailableTimesSkeleton />}
-      {serviceState && !loading ? <AvailableTimesDisplay user={user} date={date} service={serviceState} /> : null}
-
-    </div>
+      {serviceState  && !loading && date
+      ? <AvailableTimesDisplay getData={getData} user={user} date={date} service={serviceState} />
+      : 
+      loading
+      ?
+      <AvailableTimesSkeleton />
+      :
+      <div className="w-full md:w-1/3 p-6 bg-background shadow-lg dark:shadow-none dark:border-gray-700 border rounded-lg">
+        <p className="text-text text-center font-bold mb-4">No hay horarios disponibles para el dia seleccionado</p>
+      </div>
+      
+}
+</div>
   );
 };
 
-const AvailableTimesDisplay = ({ service, date, user }: { service: ServiceWithAvailability, date: Date, user: User | null }) => {
+const AvailableTimesDisplay = ({ service, date, user, getData }: { service: ServiceWithAvailability, date: Date, user: User | null, getData: Function }) => {
+
   const handleSubmit = async (input: z.infer<typeof FormContactInfoSchema>) => {
     const data = {
       ...input,
@@ -86,6 +99,7 @@ const AvailableTimesDisplay = ({ service, date, user }: { service: ServiceWithAv
       });
     }
   };
+
 
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
 
@@ -145,7 +159,8 @@ const AvailableTimesDisplay = ({ service, date, user }: { service: ServiceWithAv
   </div>
     
   }
-  const handleCreateAppointment = async (startTime: string, endTime: string) => {
+
+   const handleCreateAppointment = async (startTime: string, endTime: string) => {
     const data: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'|"status"> = {
       date,
       userId: user.id,
@@ -161,24 +176,30 @@ const AvailableTimesDisplay = ({ service, date, user }: { service: ServiceWithAv
     if (res.status === 201) {
       toast({
         title: "Confirmado",
+        description: res.message
       });
+      getData(date);
+
     } else {
       toast({
-        title: "Error al agendar turno datos",
-        description: "Por favor, recarga y vuelve a intentarlo",
+        title: "Error al agendar turno",
+        description: res.message,
       });
     }
-  };
+    
 
+  };
+  
   return (
     <div className="flex flex-col justify-center items-center p-6 bg-background md:w-2/5 shadow-lg dark:shadow-none dark:border-gray-700 border rounded-lg">
       <div className=" flex items-center justify-between">
       <h2 className="text-text text-xl font-bold mb-4">{service.name} - {capitalizeFirstLetter(date.toLocaleDateString("es-ES", { weekday: "long" }))} {date.toLocaleDateString("es-ES")}</h2>
 
       </div>
-      <p className="text-text tmb-2">Duracion: {service.duration} minutes</p>
-      <p className="text-text mb-4">Precio: ${(service.price).toFixed(2)}</p>
-      
+      <p className="text-text mb-2">Duracion: {service.duration} minutes</p>
+      <p className="text-text mb-2">Precio: ${(service.price).toFixed(2)}</p>
+      <p className="text-text font-bold my-4">Horarios disponibles</p>
+
       {service.availableTimes.map((availableTime, index) => (
         <div key={index} className="mb-4">
           

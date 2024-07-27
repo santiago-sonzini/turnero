@@ -8,6 +8,7 @@ import { Calendar } from "./calendar"
 import { format } from "util"
 import { SelectSingleEventHandler } from "react-day-picker"
 import React from "react"
+import { addDays, setDate } from "date-fns"
 
 export function DatePicker({ selected, onSelect, notFromToday, disabled }: any) {
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false)
@@ -50,7 +51,7 @@ export function DatePicker({ selected, onSelect, notFromToday, disabled }: any) 
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
-          <Calendar disabled={disabled} className="" fromDate={!notFromToday ? new Date() :  undefined}   mode="single" selected={selected} onSelect={handleOnSelect}  />
+          <Calendar  disabled={disabled} className="" fromDate={!notFromToday ? new Date() :  undefined} toDate={addDays(new Date(),15)}  mode="single" selected={selected} onSelect={handleOnSelect}  />
         </PopoverContent>
       </Popover>
     )
