@@ -10,15 +10,13 @@ export default async function Page() {
   const nextSeven = nextSevenRes.status === 200 ? nextSevenRes.data : []
   const today = todayRes.status === 200 ? todayRes.data : []
   return (
-    <ScrollArea className="w-screen md:w-fit h-full flex flex-col justify-center items-center p-3 ">
-      <div className="w-screen md:w-full">
+      <div className="w-screen md:w-full p-2 md:p-8">
       
-        <div className="flex items-center justify-between space-y-2">
+        <div className="flex items-center justify-center space-y-2">
          
           <TabsDashboard  today={today} nextSeven={nextSeven} />
 
           </div>
       </div>
-    </ScrollArea>
   );
 }

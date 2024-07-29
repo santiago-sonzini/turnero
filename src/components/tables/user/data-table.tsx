@@ -17,9 +17,8 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
-import { Input } from './input';
-import { Button } from './button';
-import { ScrollArea, ScrollBar } from './scroll-area';
+import { Button } from '@/components/ui/button';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { useState } from 'react';
 
 interface DataTableProps<TData, TValue> {
@@ -57,14 +56,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <>
-      <Input
-        placeholder={`Search ${searchKey}...`}
-        value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ''}
-        onChange={(event) =>
-          table.getColumn(searchKey)?.setFilterValue(event.target.value)
-        }
-        className="w-full md:max-w-sm my-2"
-      />
+      
       <ScrollArea className="h-[calc(80vh-220px)] rounded-md border my-2">
         <Table className="relative">
           <TableHeader>

@@ -10,7 +10,7 @@ import NextTopLoader from "nextjs-toploader";
 import { getUserData } from "../actions/auth";
 
 export const metadata: Metadata = {
-  title: "Usuario",
+  title: "Turnos",
   icons: [
     {
       rel: "icon",

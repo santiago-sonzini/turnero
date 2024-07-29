@@ -3,6 +3,7 @@ import { User, PrismaClient, Appointment } from '@prisma/client'
 import { setToken } from './auth' // Assuming this function exists
 import { db } from '@/server/db'
 import { addDays } from 'date-fns'
+import { AppointmentWithDetails } from './appoinments'
 
 
 // Types
@@ -10,7 +11,12 @@ type NewUser = Omit<User, 'id' | 'createdAt' | 'updatedAt'| "email" | "role">
 
 type UserWithToken = User & { token: string }
 
-type UserWithAppointments = User & { appointments: Appointment[] }
+export type UserWithAppointments = User & { appointments: AppointmentWithDetails[] }
+
+export type UserWithAppointmentsCount = User &  { appointments:{
+  id: string
+}[] }
+
 
 type SuccessResponse<T> = {
   status: 200 | 201;
@@ -105,12 +111,16 @@ export const get_user_phone = async (phone: string): Promise<UserResponse> => {
     }
   }
 
-export const get_user_phone_whit_apointments = async (phone: string): Promise<UserResponseWithAppointments> => {
+  export const get_user_phone_whit_apointments = async (phone: string): Promise<UserResponseWithAppointments> => {
     try {
       const user = await db.user.findUnique({
         where: { phone },
         include: {
           appointments: {
+            include: {
+              service: true,
+              user: true
+            },
             orderBy: {
               date: "desc"
             }
@@ -137,6 +147,136 @@ export const get_user_phone_whit_apointments = async (phone: string): Promise<Us
       };
     }
   }
+
+  export const get_user_id_with_apointments = async (id: string): Promise<UserResponseWithAppointments> => {
+    try {
+      const user = await db.user.findUnique({
+        where: { id },
+        include: {
+          appointments: {
+            include: {
+              service: true,
+              user: true
+            },
+            orderBy: {
+              date: "desc"
+            }
+          }
+        }
+      });
+  
+      if (user) {
+        return {
+          status: 200,
+          data: user
+        };
+      } else {
+        return {
+          status: 404,
+          message: "Usuario no encontrado"
+        };
+      }
+    } catch (error) {
+      console.error("Error en get_user_email:", error);
+      return {
+        status: 500,
+        message: `Error al buscar usuario: ${error instanceof Error ? error.message : String(error)}`
+      };
+    }
+  }
+
+  type PaginatedResponse = {
+    users: UserWithAppointmentsCount[];
+    totalUsers: number;
+    currentPage: number;
+    totalPages: number;
+  };
+  
+  type UserResponseWithAppointmentsPaginated = {
+    status: number;
+    data?: PaginatedResponse;
+    message?: string;
+  };
+ 
+
+export const get_user_apointments_paginated = async (
+    page: number = 1,
+    pageLimit: number = 10,
+    offset: number = 0,
+    phone?: string
+  ): Promise<UserResponseWithAppointmentsPaginated> => {
+    try {
+  
+      // Base query
+      let usersQuery = db.user.findMany({
+        skip: offset,
+        take: pageLimit,
+        include: {
+          appointments:{
+            select:{
+              id:true
+            }
+          },
+        },
+        orderBy: {
+          name: 'asc'
+        }
+      });
+  
+      // Count query
+      let countQuery = db.user.count();
+  
+      // If phone is provided, add it to both queries
+      if (phone) {
+        const phoneFilter = {
+          OR: [
+            { phone: { contains: phone } },
+            { name: { contains: phone } }, // Assuming you might want to search by name as well
+          ],
+        };
+        usersQuery = db.user.findMany({
+          where: phoneFilter,
+          skip: offset,
+          take: pageLimit,
+          
+          include: {
+            appointments:{
+              select:{
+                id:true
+              }
+            },
+          },
+          orderBy: {
+            name: 'asc'
+          }
+        });
+        countQuery = db.user.count({ where: phoneFilter });
+      }
+  
+      // Execute both queries concurrently
+      const [users, totalUsers] = await Promise.all([usersQuery, countQuery]);
+  
+      const totalPages = totalUsers > 0 ? Math.ceil(totalUsers / pageLimit) : 0;
+  
+      return {
+        status: 200,
+        data: {
+          users,
+          totalUsers,
+          currentPage: page,
+          totalPages,
+        }
+      };
+    } catch (error) {
+      console.error("Error in get_user_apointments_paginated:", error);
+      return {
+        status: 500,
+        message: `Error al obtener usuarios y citas: ${error instanceof Error ? error.message : String(error)}`,
+      };
+    }
+  };
+
+
 
  export async function checkUpcomingAppointments(userId: string): Promise<boolean> {
     const today = new Date();

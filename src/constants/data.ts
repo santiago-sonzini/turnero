@@ -120,21 +120,16 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'User',
-    href: '/dashboard/user',
+    href: '/dashboard/clients/',
     icon: 'user',
     label: 'user'
   },
   
-  {
-    title: 'Profile',
-    href: '/dashboard/profile',
-    icon: 'profile',
-    label: 'profile'
-  },
+  
   
   {
     title: 'Login',
-    href: '/',
+    href: '/auth',
     icon: 'login',
     label: 'login'
   }
