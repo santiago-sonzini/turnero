@@ -259,6 +259,7 @@ export const AvailableTimesDisplay = ({
               if (availableTime.startHour) {
                 return (
                   <ConfirmModal
+                    loading={false}
                     handleSubmit={() => {
                       handleCreateAppointment(time, time);
                     }}
