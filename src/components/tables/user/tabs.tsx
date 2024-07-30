@@ -15,8 +15,8 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import { AppointmentsClient } from "./client"
 import { AppointmentWithDetails } from "@/app/actions/appoinments"
+import { AppointmentsClient } from "../appoinments/client"
 
 export function TabsDashboard({ today, nextSeven }: { today: AppointmentWithDetails[], nextSeven: AppointmentWithDetails[] }) {
   return (
