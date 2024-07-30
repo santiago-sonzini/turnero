@@ -1,6 +1,7 @@
 import { get_user_apointments_paginated } from "@/app/actions/users";
 import BreadCrumb from "@/components/breadcrumb";
 import { columns } from "@/components/tables/employee-tables/columns";
+import { CreateClientModal } from "@/components/tables/employee-tables/create-modal";
 import { EmployeeTable } from "@/components/tables/employee-tables/employee-table";
 import { buttonVariants } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
@@ -44,15 +45,7 @@ export default async function page({ searchParams }: paramsProps) {
               title={`Clientes (${totalUsers})`}
               description="Informacion sobre tus clientes"
             />
-
-            <Link
-
-              href={"/dashboard/employee/new"}
-              target="_blank"
-              className={cn(buttonVariants({ variant: "default" }))}
-            >
-              <Plus className="mr-2 h-4 w-4" /> Agregar nuevo
-            </Link>
+            <CreateClientModal text="Agregar cliente" />
           </div>
           <Separator />
 

@@ -72,7 +72,7 @@ export const create_user = async (input: NewUser): Promise<CreateUserResponse> =
     }
 
     return {
-      status: 201,
+      status: 200,
       data: { ...newUser, token },
       message: "Nuevo usuario creado exitosamente"
     };

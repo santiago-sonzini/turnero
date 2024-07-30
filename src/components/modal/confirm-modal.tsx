@@ -35,13 +35,16 @@ import { Label } from "../ui/label";
 import { createAppointment } from "@/app/actions/appoinments";
 import { start } from "repl";
 import { ServiceWithAvailability } from "@/app/actions/services";
+import { LoadingSpinner } from "../loading";
 
 export function ConfirmModal({
+  loading,
   item,
   text,
   date,
   handleSubmit,
 }: {
+  loading: boolean;
   item: User ;
   text: string;
   date: Date;
@@ -91,8 +94,8 @@ export function ConfirmModal({
                   disabled
                 />
               </div>
-              <Button className="w-full" onClick={handleSubmit}>
-                Confirmar
+              <Button disabled={loading} className="w-full" onClick={handleSubmit}>
+                {loading ? <LoadingSpinner/> : "Confirmar"}
               </Button>
             </div>
              
@@ -140,8 +143,9 @@ export function ConfirmModal({
                   disabled
                 />
               </div>
-              <Button className="w-full" onClick={handleSubmit}>
-                Confirmar
+              <Button disabled={loading} className="w-full" onClick={handleSubmit}>
+              {loading ? <LoadingSpinner/> : "Confirmar"}
+
               </Button>
             </div>
           </DrawerDescription>

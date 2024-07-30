@@ -10,6 +10,7 @@ import { AppointmentWithDetails } from '@/app/actions/appoinments';
 import { format } from "date-fns"
 import { translateStatusToSpanish } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 
 export const columns: ColumnDef<AppointmentWithDetails>[] = [
   {
@@ -22,9 +23,9 @@ export const columns: ColumnDef<AppointmentWithDetails>[] = [
     )
   },
   {
-    accessorKey: 'user.name',
-    header: 'Nombre',
-    cell: ({ row }) => <div>{row.original.user.name}</div>
+    accessorKey: 'name',
+    header: 'Cliente',
+    cell: ({ row }) => <Link href={`/dashboard/clients/${row.original.userId}`} className='underline'>{row.original.user.name}</Link>
   },
   {
     accessorKey: 'startTime',
@@ -34,7 +35,9 @@ export const columns: ColumnDef<AppointmentWithDetails>[] = [
   {
     accessorKey: 'user.phone',
     header: 'Nro de telefono',
-    cell: ({ row }) => <div>{row.original.user.phone}</div>
+    cell: ({ row }) => <a target="_blank" href={`https://wa.me/549${row.original.user.phone}`} className="flex items-center underline text-lg md:text-sm text-muted-foreground">
+    {`+54 9 ${row.original.user.phone}`}
+  </a>
   },
   {
     accessorKey: 'service.name',

@@ -69,3 +69,24 @@ export function translateStatusToSpanish(status: AppointmentStatus): string {
       return "Estado desconocido";
   }
 }
+
+
+export function cleanAndFixPhone(phone: string): string {
+  // Remove all spaces first
+  let cleanedPhone = phone.replace(/\s/g, '');
+
+  // Then remove any remaining non-digit characters
+  cleanedPhone = cleanedPhone.replace(/\D/g, '');
+
+  // Remove '549' from the start if present
+  if (cleanedPhone.startsWith('549')) {
+    cleanedPhone = cleanedPhone.slice(3);
+  }
+
+  // Ensure the number isn't empty after cleaning
+  if (cleanedPhone.length === 0) {
+    cleanedPhone = '0000000000'; // Default to a placeholder number
+  }
+
+  return cleanedPhone;
+}

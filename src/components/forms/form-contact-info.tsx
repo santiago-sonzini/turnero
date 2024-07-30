@@ -19,6 +19,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Ref } from "react";
 import { Facebook, Instagram, InstagramIcon } from "lucide-react";
 import { User } from "@prisma/client";
+import { Badge } from "../ui/badge";
 
 export const FormContactInfoSchema = z.object({
   name: z.string().min(2, {
@@ -76,8 +77,12 @@ export function FormContactInfo({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-text">Numero de telefono</FormLabel>
-              <FormControl>
-                <Input type="phone" placeholder="5490000000" {...field} />
+              <FormControl >
+                <div className="flex items-center w-full gap-x-2">
+                <Badge className="text-text text-nowrap p-2">+54 9</Badge>
+                <Input type="phone" placeholder="353456789" {...field} />
+                </div>
+                
               </FormControl>
               <FormDescription></FormDescription>
               <FormMessage />

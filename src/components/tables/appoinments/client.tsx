@@ -24,12 +24,12 @@ export const AppointmentsClient = ({ data }: AppointmentClientProps) => {
           title={`Turnos (${data.length})`}
           description=''
         />
-        <Button
+        {/* <Button
           className="text-xs md:text-sm"
           onClick={() => router.push(`/dashboard/user/new`)}
         >
           <Plus className="mr-2 h-4 w-4" />Crear turno
-        </Button>
+        </Button> */}
       </div>
       <DataTable searchKey="name" columns={columns} data={data} />
     </>

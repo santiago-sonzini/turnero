@@ -124,13 +124,10 @@ export const navItems: NavItem[] = [
     icon: 'user',
     label: 'Clientes'
   },
-  
-  
-  
   {
-    title: 'Login',
-    href: '/auth',
+    title: 'Cerrar Sesion',
+    href: '/signout',
     icon: 'login',
-    label: 'login'
+    label: 'salir'
   }
 ];

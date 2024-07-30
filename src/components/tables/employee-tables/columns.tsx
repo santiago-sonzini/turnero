@@ -33,7 +33,10 @@ export const columns: ColumnDef<UserWithAppointmentsCount>[] = [
   
   {
     accessorKey: 'phone',
-    header: 'NRO DE TELEFONO'
+    header: 'Nro de telefono',
+    cell: ({ row }) => <a target="_blank" href={`https://wa.me/549${row.original.phone}`} className="flex items-center underline text-lg md:text-sm text-muted-foreground">
+    {`+54 9 ${row.original.phone}`}
+  </a>
   },
   {
     accessorKey: 'createdAt',

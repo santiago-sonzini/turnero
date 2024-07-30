@@ -16,12 +16,10 @@ export default async function Page({ params }: { params: { id: string } }) {
     ];
 
     return (
-      <ScrollArea className="h-full">
-        <div className="flex-1 space-y-4 p-8">
+        <div className="flex-1 space-y-4 p-2 md:p-8">
           <BreadCrumb items={breadcrumbItems} />
-         <ClientsClient data={data} />
+          <ClientsClient data={data} />
         </div>
-      </ScrollArea>
     );
   }
 

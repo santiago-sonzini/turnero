@@ -12,7 +12,9 @@ export const env = createEnv({
       .enum(["development", "test", "production"])
       .default("development"),
     JWT_SECRET: z.string(),
-    DIRECT_URL: z.string().url()
+    DIRECT_URL: z.string().url(),
+    SUPABASE_URL: z.string(),
+    SUPABASE_ANON_KEY: z.string()
 
   },
 
@@ -30,6 +32,8 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
     DATABASE_URL: process.env.DATABASE_URL,
     DIRECT_URL: process.env.DATABASE_URL,
 

@@ -81,7 +81,7 @@ export async function createAppointment(appointmentData: Omit<Appointment, 'id' 
       data: appointmentData,
     })
     return {
-      status: 201,
+      status: 200,
       data: appointment,
       message: 'Turno agregado exitosamente',
     }
@@ -126,18 +126,18 @@ async function updateAppointment(id: string, updateData: Partial<Omit<Appointmen
 }
 
 // Delete
-async function deleteAppointment(id: string): Promise<CrudResponse<null>> {
+export async function deleteAppointment(id: string): Promise<CrudResponse<null>> {
   try {
     await db.appointment.delete({
       where: { id },
     })
     return {
-      status: 204,
+      status: 200,
       data: null,
-      message: 'Appointment deleted successfully',
+      message: 'Turno eliminado exitosamente. \n Recarga la página para ver los turnos programados.',
     }
   } catch (error) {
-    return createErrorResponse(500, `Failed to delete appointment: ${error instanceof Error ? error.message : String(error)}`)
+    return createErrorResponse(500, `No se pudo eliminar el turno, intente nuevamente mas tarde.`)
   }
 }
 
@@ -198,13 +198,13 @@ export type AppointmentWithDetails = Appointment & {
 type AppointmentsResponse = SuccessResponse<AppointmentWithDetails[]> | ErrorResponse
 
 // Function to get appointments for the next seven days
-export const getNextSevenDaysAppointments = async (): Promise<AppointmentsResponse> => {
+export const getNextDaysAppointments = async (days: number): Promise<AppointmentsResponse> => {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     const sevenDaysLater = new Date(today);
-    sevenDaysLater.setDate(today.getDate() + 7);
+    sevenDaysLater.setDate(today.getDate() + days);
     sevenDaysLater.setHours(23, 59, 59, 999);
 
     const appointments = await db.appointment.findMany({

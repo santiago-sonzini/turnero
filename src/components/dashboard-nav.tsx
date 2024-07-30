@@ -14,6 +14,8 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from './ui/tooltip';
+import { Button } from './ui/button';
+import { sign_out } from '@/app/actions/admin-auth';
 
 interface DashboardNavProps {
   items: NavItem[];
@@ -39,42 +41,82 @@ export function DashboardNav({
     <nav className="grid items-start gap-2">
       <TooltipProvider>
         {items.map((item, index) => {
+            
           const Icon = Icons[item.icon || 'arrowRight'];
-          return (
-            item.href && (
+          if (item.href === "/signout") {
+            return (
               <Tooltip key={index}>
-                <TooltipTrigger asChild>
-                  <Link
-                    href={item.disabled ? '/' : item.href}
-                    className={cn(
-                      'flex items-center gap-2 overflow-hidden rounded-md py-2 text-sm font-medium hover:bg-accent hover:duration-300 hover:ease-in-out transition-all hover:text-white',
-                      path === item.href ? 'bg-accent text-white' : 'transparent',
-                      item.disabled && 'cursor-not-allowed opacity-80'
-                    )}
-                    onClick={() => {
-                      if (setOpen) setOpen(false);
-                    }}
+                  <TooltipTrigger asChild>
+                    <Link
+                      href={item.disabled ? '/' : "/auth"}
+                      className={cn(
+                        'flex items-center gap-2 overflow-hidden rounded-md py-2 text-sm font-medium hover:bg-accent hover:duration-300 hover:ease-in-out transition-all hover:text-white',
+                        path === item.href ? 'bg-accent text-white' : 'transparent',
+                        item.disabled && 'cursor-not-allowed opacity-80'
+                      )}
+                      onClick={async() => {
+                        await sign_out()
+                        if (setOpen) setOpen(false);
+                      }}
+                    >
+                      <Icon className={`ml-3 size-5`} />
+  
+                      {isMobileNav || (!isMinimized && !isMobileNav) ? (
+                        <span className="mr-2 truncate">{item.title}</span>
+                      ) : (
+                        ''
+                      )}
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    align="center"
+                    side="right"
+                    sideOffset={8}
+                    className={!isMinimized ? 'hidden' : 'inline-block'}
                   >
-                    <Icon className={`ml-3 size-5`} />
-
-                    {isMobileNav || (!isMinimized && !isMobileNav) ? (
-                      <span className="mr-2 truncate">{item.title}</span>
-                    ) : (
-                      ''
-                    )}
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent
-                  align="center"
-                  side="right"
-                  sideOffset={8}
-                  className={!isMinimized ? 'hidden' : 'inline-block'}
-                >
-                  {item.title}
-                </TooltipContent>
-              </Tooltip>
-            )
-          );
+                    {item.title}
+                  </TooltipContent>
+                </Tooltip>)
+          } else {
+            return (
+              item.href && (
+                <Tooltip key={index}>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href={item.disabled ? '/' : item.href}
+                      className={cn(
+                        'flex items-center gap-2 overflow-hidden rounded-md py-2 text-sm font-medium hover:bg-accent hover:duration-300 hover:ease-in-out transition-all hover:text-white',
+                        path === item.href ? 'bg-accent text-white' : 'transparent',
+                        item.disabled && 'cursor-not-allowed opacity-80'
+                      )}
+                      onClick={() => {
+                        if (setOpen) setOpen(false);
+                      }}
+                    >
+                      <Icon className={`ml-3 size-5`} />
+  
+                      {isMobileNav || (!isMinimized && !isMobileNav) ? (
+                        <span className="mr-2 truncate">{item.title}</span>
+                      ) : (
+                        ''
+                      )}
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    align="center"
+                    side="right"
+                    sideOffset={8}
+                    className={!isMinimized ? 'hidden' : 'inline-block'}
+                  >
+                    {item.title}
+                  </TooltipContent>
+                </Tooltip>
+              )
+            );
+          }
+          
+          
+          
         })}
       </TooltipProvider>
     </nav>

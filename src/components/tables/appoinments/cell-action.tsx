@@ -1,4 +1,5 @@
 'use client';
+import { deleteAppointment } from '@/app/actions/appoinments';
 import { AlertModal } from '@/components/modal/alert-modal';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,6 +9,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+import { toast } from '@/components/ui/use-toast';
 import { User } from '@/constants/data';
 import { Appointment } from '@prisma/client';
 import { Edit, MoreHorizontal, Trash } from 'lucide-react';
@@ -23,8 +25,25 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const onConfirm = async () => {};
+  const onConfirm = async () => {
+    setLoading(true);
 
+    const res = await deleteAppointment(data.id);
+    console.log("🚀 ~ onConfirm ~ res:", res)
+    if (res.status === 200) {
+      toast({
+        title: "Turno eliminado",
+        description: res.message,
+      });
+    } else {
+      toast({
+        title: "Error al eliminar turno",
+        description: res.message,
+      });
+    }
+    setOpen(false);
+    setLoading(false);
+  };
   return (
     <>
       <AlertModal
@@ -41,13 +60,13 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuLabel>Acciones</DropdownMenuLabel>
 
-          <DropdownMenuItem
+          {/* <DropdownMenuItem
             onClick={() => router.push(`/dashboard/user/${data.id}`)}
           >
             <Edit className="mr-2 h-4 w-4" /> Update
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
           <DropdownMenuItem onClick={() => setOpen(true)}>
             <Trash className="mr-2 h-4 w-4" /> Delete
           </DropdownMenuItem>
